@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101a2b">
+  <meta name="description" content="JUSeeds — university school visit planning, approvals and reports.">
+  <title>JUSeeds | School Visit Management</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="/" aria-label="JUSeeds home">
+        <span class="brand-mark">JU</span><span><strong>JUSeeds</strong><small>FIELD VISIT MANAGEMENT</small></span>
+      </a>
+      <div class="side-caption">WORKSPACE</div>
+      <nav class="nav" aria-label="Main navigation">
+        <button class="nav-item active" data-view="overview"><span>◫</span> Overview</button>
+        <button class="nav-item" data-view="visits"><span>▤</span> Visit plans</button>
+        <button class="nav-item" data-view="schools" data-admin><span>⌂</span> Schools & teams</button>
+        <button class="nav-item" data-view="users" data-admin><span>♙</span> User management</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="secure-note"><span class="secure-dot"></span><div><b>Secure workspace</b><small>Role-based access enabled</small></div></div>
+        <button class="nav-item signout" id="logoutBtn"><span>↪</span> Sign out</button>
+      </div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <button class="mobile-menu" id="menuBtn" aria-label="Open navigation">☰</button>
+        <div><div class="eyebrow">JOY UNIVERSITY · OPERATIONS</div><h1 id="pageTitle">Overview</h1></div>
+        <div class="profile"><span class="avatar" id="avatar">JU</span><span><b id="profileName">Signed out</b><small id="profileRole">JUSeeds account</small></span></div>
+      </header>
+      <section id="loginScreen" class="login-layout">
+        <div class="login-copy">
+          <div class="eyebrow light">PLAN · APPROVE · REPORT</div>
+          <h2>Turn every visit<br>into <em>real impact.</em></h2>
+          <p>One dependable workspace for school visits, approvals, field outcomes and reporting across the university.</p>
+          <div class="login-points"><span>✓ Clear approval trail</span><span>✓ Centralized visit records</span><span>✓ Role-based workspace</span></div>
+        </div>
+        <div class="login-card">
+          <div class="card-kicker">WELCOME BACK</div><h3>Sign in to JUSeeds</h3><p class="muted">Use the username and password provided by your administrator.</p>
+          <form id="loginForm">
+            <label for="username">Username</label><input id="username" name="username" autocomplete="username" required minlength="3" maxlength="40" placeholder="Enter your username">
+            <label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required maxlength="256" placeholder="Enter your password">
+            <button class="primary full" type="submit" id="loginSubmit">Sign in <span>→</span></button>
+            <p class="form-message" id="loginMessage" role="alert"></p>
+          </form>
+          <div class="login-foot"><span class="lock">▣</span> Your session is protected with secure cookies.</div>
+        </div>
+      </section>
+      <section id="appScreen" hidden>
+        <div class="welcome-row"><div><div class="eyebrow" id="welcomeEyebrow">YOUR WORKSPACE</div><h2 id="welcomeTitle">Welcome back</h2><p class="muted" id="welcomeText">Here is the latest visit activity.</p></div><button class="primary" id="newVisitBtn">＋ New visit plan</button></div>
+        <div class="stat-grid" id="statGrid"></div>
+        <div class="content-grid">
+          <section class="panel recent-panel"><div class="panel-head"><div><h3>Recent visit plans</h3><p>Latest updates from your workspace</p></div><button class="text-button" data-goto="visits">View all →</button></div><div id="recentVisits" class="table-wrap"></div></section>
+          <section class="panel workflow-panel"><div class="panel-head"><div><h3>How it flows</h3><p>From planning to impact</p></div></div>
+            <ol class="workflow"><li><span>01</span><div><b>Draft a plan</b><small>Set the destination, purpose and team.</small></div></li><li><span>02</span><div><b>Submit for approval</b><small>Your assigned In-Charge reviews it.</small></div></li><li><span>03</span><div><b>Complete the visit</b><small>Record outcomes and submit a report.</small></div></li><li><span>04</span><div><b>Close the loop</b><small>Reports are reviewed and accepted.</small></div></li></ol>
+          </section>
+        </div>
+        <section class="panel page-panel" id="pagePanel" hidden></section>
+      </section>
+      <footer class="footer"><span>JUSeeds <span id="year"></span></span><span>School Visit Planning & Reporting</span></footer>
+    </main>
+  </div>
+  <dialog id="visitDialog" class="dialog"><form id="visitForm" method="dialog"><div class="dialog-head"><div><div class="eyebrow">VISIT WORKSPACE</div><h3>Create visit plan</h3></div><button type="button" class="icon-button" id="closeVisit" aria-label="Close">×</button></div><div class="form-grid">
+    <div class="field wide"><label for="visitTitle">Visit title *</label><input id="visitTitle" required maxlength="180" placeholder="e.g. Industry exposure visit"></div>
+    <div class="field"><label for="visitSchool">School *</label><select id="visitSchool" required></select></div><div class="field"><label for="visitTeam">Team *</label><select id="visitTeam" required></select></div>
+    <div class="field"><label for="visitDestination">Destination</label><input id="visitDestination" maxlength="180"></div><div class="field"><label for="visitAddress">Address</label><input id="visitAddress" maxlength="300"></div>
+    <div class="field"><label for="visitDate">Visit date</label><input id="visitDate" type="date"></div><div class="field"><label for="visitPurpose">Purpose</label><input id="visitPurpose" maxlength="3000"></div>
+    <div class="field wide"><label for="visitObjectives">Objectives</label><textarea id="visitObjectives" rows="2" maxlength="3000"></textarea></div><div class="field wide"><label for="visitParticipants">Participants</label><textarea id="visitParticipants" rows="2" maxlength="3000"></textarea></div><div class="field wide"><label for="visitNotes">Additional notes</label><textarea id="visitNotes" rows="2" maxlength="3000"></textarea></div>
+  </div><p class="form-message" id="visitMessage" role="alert"></p><div class="dialog-actions"><button type="button" class="secondary" id="cancelVisit">Cancel</button><button type="submit" class="primary" id="saveVisit">Save draft</button></div></form></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>
