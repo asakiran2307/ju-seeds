@@ -96,6 +96,10 @@ module.exports = async function handler(req, res) {
       const password = String(body.password || "");
       if (!/^[a-z0-9._-]{3,40}$/.test(username) || !password || password.length > 256) return fail(res, 400, "INVALID_INPUT", "Enter a valid username and password.");
       if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) return fail(res, 503, "AUTH_NOT_CONFIGURED", "Login is not configured yet. Contact the system administrator.");
+      const ip = String(req.headers["x-real-ip"] || (req.headers["x-forwarded-for"] || "").split(",")[0] || "unknown").trim().slice(0,80);
+      const recent = await db().query("SELECT COUNT(*)::int AS count FROM login_attempts WHERE username=$1 AND ip_address=$2 AND attempted_at>NOW()-INTERVAL '15 minutes'", [username,ip]);
+      if (recent.rows[0].count >= 8) return fail(res, 429, "RATE_LIMITED", "Too many sign-in attempts. Wait 15 minutes and try again.");
+      await db().query("INSERT INTO login_attempts(username,ip_address) VALUES($1,$2)", [username,ip]);
       const result = await db().query("SELECT id,username,password_hash,active FROM users WHERE username=$1 LIMIT 1", [username]);
       const user = result.rows[0];
       const valid = user && user.active && await bcrypt.compare(password, user.password_hash);
@@ -103,6 +107,7 @@ module.exports = async function handler(req, res) {
         await new Promise(resolve => setTimeout(resolve, 250));
         return fail(res, 401, "INVALID_CREDENTIALS", "Username or password is incorrect.");
       }
+      await db().query("DELETE FROM login_attempts WHERE username=$1 AND ip_address=$2", [username,ip]);
       const token = crypto.randomBytes(32).toString("base64url");
       const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
       await db().query("INSERT INTO app_sessions(id,user_id,expires_at) VALUES($1,$2,NOW()+INTERVAL '12 hours')", [tokenHash, user.id]);
