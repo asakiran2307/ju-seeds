@@ -274,6 +274,23 @@ module.exports = async function handler(req, res) {
         return json(res,200,{visit:updated.rows[0]});
       } catch(e) { await client.query("ROLLBACK").catch(()=>{}); throw e; } finally { client.release(); }
     }
+    if (method === "GET" && path === "/api/assignments") {
+      if (!requireRole(user, ["admin"])) return fail(res, 403, "FORBIDDEN", "Administrator access required.");
+      const result = await db().query("SELECT a.id,a.user_id,a.school_id,a.team_id,a.active,u.username,u.full_name,s.name AS school_name,t.name AS team_name FROM in_charge_assignments a JOIN users u ON u.id=a.user_id JOIN schools s ON s.id=a.school_id LEFT JOIN teams t ON t.id=a.team_id WHERE a.active=TRUE ORDER BY s.name,u.full_name,t.name");
+      return json(res, 200, { assignments: result.rows });
+    }
+    if (method === "POST" && path === "/api/assignments") {
+      if (!requireRole(user, ["admin"])) return fail(res, 403, "FORBIDDEN", "Administrator access required.");
+      const b = await readBody(req);
+      const userId = Number(b.userId), schoolId = Number(b.schoolId), teamId = b.teamId ? Number(b.teamId) : null;
+      const target = await db().query("SELECT id,role FROM users WHERE id=$1 AND active=TRUE", [userId]);
+      if (!target.rowCount || target.rows[0].role !== "in_charge") return fail(res, 400, "INVALID_USER", "Select an active In-Charge account.");
+      if (!Number.isInteger(schoolId)) return fail(res, 400, "INVALID_INPUT", "Select a school.");
+      if (teamId) { const team = await db().query("SELECT 1 FROM teams WHERE id=$1 AND school_id=$2 AND active=TRUE", [teamId,schoolId]); if (!team.rowCount) return fail(res,400,"INVALID_SCOPE","Team must belong to the selected school."); }
+      const result = await db().query("INSERT INTO in_charge_assignments(user_id,school_id,team_id,assigned_by,active) VALUES($1,$2,$3,$4,TRUE) RETURNING id,user_id,school_id,team_id,active", [userId,schoolId,teamId,user.id]);
+      await db().query("INSERT INTO audit_logs(actor_user_id,action,entity_type,entity_id,metadata) VALUES($1,'in_charge.assigned','assignment',$2,$3::jsonb)", [user.id,String(result.rows[0].id),JSON.stringify({userId,schoolId,teamId})]);
+      return json(res,201,{assignment:result.rows[0]});
+    }
     if (method === "GET" && path === "/api/users") {
       if (!requireRole(user,["admin"])) return fail(res,403,"FORBIDDEN","Administrator access required.");
       const result = await db().query("SELECT id,username,full_name,role,school_id,team_id,active,created_at FROM users ORDER BY created_at DESC LIMIT 500");
