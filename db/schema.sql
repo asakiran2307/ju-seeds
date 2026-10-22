@@ -77,3 +77,11 @@ CREATE TABLE IF NOT EXISTS audit_logs (
  metadata JSONB NOT NULL DEFAULT '{}'::jsonb, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_logs(created_at DESC);
+
+CREATE TABLE IF NOT EXISTS login_attempts (
+ id BIGSERIAL PRIMARY KEY,
+ username TEXT NOT NULL,
+ ip_address TEXT NOT NULL,
+ attempted_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_login_attempts_window ON login_attempts(username,ip_address,attempted_at DESC);
