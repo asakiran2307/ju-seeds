@@ -39,7 +39,7 @@ The optional bootstrap endpoint is not required when using the CLI script. Do no
 
 ## Important limitations in this first implementation
 - Private object storage provider is not configured; evidence uploads and generated PDFs are not enabled yet.
-- In-Charge assignment management UI and bulk provisioning for the 9-school / 45-team baseline still need to be completed before operational rollout.
-- Rate limiting and automated integration tests should be added before production use.
+- In-Charge assignment UI is available. The initial 9-school / 45-team structure must still be entered by an administrator; school names were not guessed or hardcoded.
+- Database-backed login throttling and source syntax checks are included. End-to-end integration tests and production acceptance testing are still required.
 - Review and apply database schema intentionally; deployment alone does not create database tables.
 - A deployment marked READY does not prove that live login/database flows work.
