@@ -1,0 +1,18 @@
+{
+  "name": "juseeds",
+  "version": "1.0.0",
+  "private": true,
+  "description": "JUSeeds university school visit planning, approval and reporting system",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "vercel dev",
+    "check": "node --check api/index.js && node --check public/app.js && node --check scripts/create-admin.mjs"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "vercel": "^39.1.2"
+  }
+}
